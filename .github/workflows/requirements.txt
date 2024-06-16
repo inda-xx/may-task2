@@ -1,8 +1,2 @@
-{
-  "difficulty": "medium",
-  "language": "Python",
-  "additional_requirements": [
-    "Include a method to serialize the object to JSON.",
-    "Implement unit tests for each method."
-  ]
-}
+openai
+markdown

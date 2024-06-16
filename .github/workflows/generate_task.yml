@@ -30,8 +30,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r .github/workflows/requirements.txt
 
+      - name: Verify dependencies
+        run: |
+          pip list
+          which python
+          python --version
+
       - name: Generate and push new task
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
+          echo "Running task generation script"
           python scripts/generate_task.py '${{ github.event.inputs.template }}' '${{ github.event.inputs.requirements }}'
