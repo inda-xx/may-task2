@@ -1,25 +1,26 @@
-import openai
+from openai import OpenAI
 import subprocess
 import os
 import sys
-import json
 from datetime import datetime
 
-# Set your OpenAI API key here
-openai.api_key = os.getenv('OPENAI_API_KEY')
+# Initialize the OpenAI client
+client = OpenAI(
+    api_key=os.getenv('OPENAI_API_KEY')
+)
 
 def generate_task(template, requirements):
     try:
         # Generate the task using the new OpenAI API
         prompt = f"Create a new programming task based on this template: {template}. Requirements: {requirements}"
-        response = openai.create(
+        response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": prompt}
             ]
         )
-        return response['choices'][0]['message']['content'].strip()
+        return response.choices[0].message.content.strip()
     except Exception as e:
         print(f"Error generating task: {e}")
         sys.exit(1)
@@ -36,6 +37,7 @@ def create_branch(branch_name):
 def commit_and_push_changes(branch_name, task_content):
     try:
         # Save the generated task to a markdown file and commit the changes
+        os.makedirs("tasks", exist_ok=True)
         with open("tasks/new_task.md", "w") as file:
             file.write(task_content)
 
