@@ -1,0 +1,20 @@
+name: Dispatch Workflow
+
+on: [push, pull_request]
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Trigger Generate Task Workflow
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: generate_task.yml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          inputs: |
+            template: "Your task template here"
+            parameters: '{"difficulty": "medium", "language": "JavaScript"}'
