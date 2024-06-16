@@ -13,7 +13,7 @@ def generate_task(template, requirements):
         # Generate the task using the new OpenAI API
         prompt = f"Create a new programming task based on this template: {template}. Requirements: {requirements}"
         response = openai.ChatCompletion.create(
-            model="gpt-4-turbo",
+            model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": prompt}
