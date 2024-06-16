@@ -1,0 +1,39 @@
+name: Generate Task
+
+on:
+  workflow_dispatch:
+    inputs:
+      template:
+        description: 'Task template'
+        required: true
+        default: 'Modeling objects in Java with getters, setters, and constructors.'
+      requirements:
+        description: 'Requirements for the new task'
+        required: true
+        default: '{"difficulty": "medium", "language": "Python"}'
+
+jobs:
+  generate-task:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Generate and push new task
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          python generate_task.py '${{ github.event.inputs.template }}' '${{ github.event.inputs.parameters }}'
+
+          
