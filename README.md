@@ -21,7 +21,7 @@ We have implemented an automated task generation system. Follow these steps to g
 
 4. **Review New Branch:**
    - After the workflow completes, a new branch containing the generated task will be created in the repository.
-   - Review the new task in the `tasks/new_task.md` file and merge the branch into the main branch as appropriate.
+   - Review the new task in the `tasks/new_task.md` file and merge the branch into the main branch.
 
 ## Project Structure
 
