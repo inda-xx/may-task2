@@ -1,0 +1,18 @@
+name: Customize Next Task
+
+on:
+  push:
+    paths:
+      - 'grading_results/**'
+
+jobs:
+  customize-task:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Customize next task
+      run: |
+        python scripts/customize_next_task.py grading_results/{student_id}.txt next_week_task_template.yaml submissions/{student_id}/next_task.md
