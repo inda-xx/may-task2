@@ -2,6 +2,7 @@ from openai import OpenAI
 import subprocess
 import os
 import sys
+import json
 from datetime import datetime
 
 # Initialize the OpenAI client
@@ -11,8 +12,11 @@ client = OpenAI(
 
 def generate_task(template, requirements):
     try:
+        # Parse requirements JSON
+        requirements_dict = json.loads(requirements)
+        
         # Generate the task using the OpenAI API
-        prompt = f"Create a new programming task based on this template: {template}. Requirements: {requirements}"
+        prompt = f"Create a new programming task based on this template: {template}. Requirements: {requirements_dict}"
         response = client.completions.create(
             model="text-davinci-003",
             prompt=prompt,
