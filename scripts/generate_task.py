@@ -31,7 +31,7 @@ def main(api_key, template, requirements):
                 {"role": "user", "content": prompt}
             ]
         )
-        task_content = response['choices'][0]['message']['content'].strip()
+        task_content = response.choices[0].message.content.strip()
     except Exception as e:
         print(f"Error generating task: {e}")
         sys.exit(1)
@@ -67,6 +67,9 @@ def commit_and_push_changes(branch_name, task_content):
         subprocess.run(["git", "push", "origin", branch_name], check=True)
     except subprocess.CalledProcessError as e:
         print(f"Error committing and pushing changes: {e}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
         sys.exit(1)
 
 if __name__ == "__main__":
