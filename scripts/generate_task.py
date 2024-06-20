@@ -1,21 +1,20 @@
 import os
 import sys
 import json
-import random
-from openai import OpenAI
+import subprocess
 from datetime import datetime
+from openai import OpenAI
 
 def main(key, template, requirements):
-
     client = OpenAI(api_key=key)
-
-    # Parse requirements
+    
+    # Parse requirements JSON
     requirements_dict = json.loads(requirements)
 
-    # Template and requirements into a single prompt
+    # Combine template and requirements into a single prompt
     prompt = f"Create a new programming task based on this template: {template}. Requirements: {requirements_dict}"
 
-
+    # Call OpenAI API to generate task
     response = client.completions.create(
         model="text-davinci-003",
         prompt=prompt,
@@ -24,7 +23,7 @@ def main(key, template, requirements):
 
     task_content = response.choices[0].text.strip()
 
-    # Create a new branch 
+    # Create a new branch with a unique name
     branch_name = f"task-{datetime.now().strftime('%Y%m%d%H%M%S')}"
     create_branch(branch_name)
     commit_and_push_changes(branch_name, task_content)
@@ -40,7 +39,7 @@ def create_branch(branch_name):
 
 def commit_and_push_changes(branch_name, task_content):
     try:
-        # Save generated task to a markdown file and commit
+        # Save the generated task to a markdown file and commit the changes
         os.makedirs("tasks", exist_ok=True)
         with open("tasks/new_task.md", "w") as file:
             file.write(task_content)
