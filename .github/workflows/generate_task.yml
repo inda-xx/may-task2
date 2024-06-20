@@ -18,10 +18,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3  # Updated to v3
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v4  # Updated to v4
+        uses: actions/setup-python@v4
         with:
           python-version: '3.8'
 
@@ -29,12 +29,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r .github/workflows/requirements.txt
-
-      - name: Verify dependencies
-        run: |
-          pip list
-          which python
-          python --version
 
       - name: Generate and push new task
         env:
