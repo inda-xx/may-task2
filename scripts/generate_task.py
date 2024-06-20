@@ -45,8 +45,12 @@ def create_branch(branch_name):
     try:
         # Create a new git branch
         subprocess.run(["git", "checkout", "-b", branch_name], check=True)
-        # Use the GITHUB_TOKEN for authentication
-        subprocess.run(["git", "push", "-u", "origin", branch_name], check=True, env=dict(os.environ, GIT_ASKPASS='echo', GIT_USERNAME='x-access-token', GIT_PASSWORD=os.getenv('GITHUB_TOKEN')))
+        # Use the PAT_TOKEN for authentication
+        subprocess.run(
+            ["git", "push", "-u", "origin", branch_name],
+            check=True,
+            env=dict(os.environ, GIT_ASKPASS='echo', GIT_USERNAME='x-access-token', GIT_PASSWORD=os.getenv('PAT_TOKEN'))
+        )
     except subprocess.CalledProcessError as e:
         print(f"Error creating branch: {e}")
         sys.exit(1)
@@ -65,8 +69,12 @@ def commit_and_push_changes(branch_name, task_content):
 
         subprocess.run(["git", "add", task_file_path], check=True)
         subprocess.run(["git", "commit", "-m", f"Add new task: {branch_name}"], check=True)
-        # Use the GITHUB_TOKEN for authentication
-        subprocess.run(["git", "push", "origin", branch_name], check=True, env=dict(os.environ, GIT_ASKPASS='echo', GIT_USERNAME='x-access-token', GIT_PASSWORD=os.getenv('GITHUB_TOKEN')))
+        # Use the PAT_TOKEN for authentication
+        subprocess.run(
+            ["git", "push", "origin", branch_name],
+            check=True,
+            env=dict(os.environ, GIT_ASKPASS='echo', GIT_USERNAME='x-access-token', GIT_PASSWORD=os.getenv('PAT_TOKEN'))
+        )
     except subprocess.CalledProcessError as e:
         print(f"Error committing and pushing changes: {e}")
         sys.exit(1)

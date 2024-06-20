@@ -35,7 +35,7 @@ jobs:
       - name: Generate and push new task
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}  # Add this line
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}  # Use PAT instead of GITHUB_TOKEN
         run: |
           echo "${{ github.event.inputs.template }}" > template.txt
           echo '${{ github.event.inputs.requirements }}' > requirements.json
