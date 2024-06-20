@@ -3,14 +3,14 @@ import sys
 import json
 import subprocess
 from datetime import datetime
-import openai
+from openai import OpenAI
 
 def main(api_key, template, requirements):
     if not api_key:
         print("Error: OpenAI API key is missing.")
         sys.exit(1)
 
-    openai.api_key = api_key
+    client = OpenAI(api_key=api_key)
     
     # Parse requirements JSON
     try:
@@ -24,7 +24,7 @@ def main(api_key, template, requirements):
 
     # Call OpenAI API to generate task
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
@@ -32,7 +32,7 @@ def main(api_key, template, requirements):
             ]
         )
         task_content = response.choices[0].message["content"].strip()
-    except openai.OpenAIError as e:
+    except Exception as e:
         print(f"Error generating task: {e}")
         sys.exit(1)
 
