@@ -58,49 +58,7 @@ on:
           2. Ensure that all unit tests pass before submission.
           3. The grading will be based on the correctness, code style, efficiency, and documentation.
 
-          ## Example
 
-          Here is an example of how your `Indamon` class might look in Java:
-
-          ```java
-          public class Indamon {
-              private String name;
-              private int hp;
-              private int attack;
-              private int defense;
-              private boolean fainted;
-
-              public Indamon(String name, int hp, int attack, int defense) {
-                  this.name = name;
-                  this.hp = hp;
-                  this.attack = attack;
-                  this.defense = defense;
-                  this.fainted = false;
-              }
-
-              public void printInfo() {
-                  System.out.println("Name: " + name);
-                  System.out.println("HP: " + hp);
-                  System.out.println("Attack: " + attack);
-                  System.out.println("Defense: " + defense);
-                  System.out.println("Fainted: " + fainted);
-              }
-
-              public void attack(Indamon other) {
-                  if (!fainted && !other.fainted) {
-                      int damage = attack - other.defense;
-                      other.hp = Math.max(other.hp - damage, 0);
-                      if (other.hp <= 0) {
-                          other.fainted = true;
-                          other.hp = 0;
-                      }
-                      System.out.println(name + " attacked " + other.name + " for " + damage + " damage! " + other.name + " has " + other.hp + " HP left.");
-                  } else {
-                      System.out.println("Cannot attack. One of the Indamons has fainted.");
-                  }
-              }
-          }
-          ```
       requirements:
         description: 'Requirements for the new task'
         required: true
