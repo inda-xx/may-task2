@@ -32,6 +32,6 @@ jobs:
 
     - name: Generate and push new task
       env:
-        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        OPENAI_API_KEY: ${{ secrets.OPENAI_TOKEN }}
       run: |
-        python scripts/generate_task.py "${{ secrets.OPENAI_API_KEY }}" "${{ github.event.inputs.template }}" "${{ github.event.inputs.requirements }}"
+        python scripts/generate_task.py "${{ secrets.OPENAI_TOKEN }}" "${{ github.event.inputs.template }}" "${{ github.event.inputs.requirements }}"
