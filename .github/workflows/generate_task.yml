@@ -37,5 +37,5 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           echo "${{ github.event.inputs.template }}" > template.txt
-          echo "${{ github.event.inputs.requirements }}" > requirements.json
+          echo '${{ github.event.inputs.requirements }}' > requirements.json
           python scripts/generate_task.py "${{ secrets.OPENAI_API_KEY }}" "$(cat template.txt)" "$(cat requirements.json)"
