@@ -1,31 +1,33 @@
-from openai import OpenAI
-import subprocess
 import os
 import sys
 import json
+import random
+from openai import OpenAI
 from datetime import datetime
 
-# Initialize the OpenAI client
-client = OpenAI(
-    api_key=os.getenv('OPENAI_API_KEY')
-)
+def main(key, template, requirements):
 
-def generate_task(template, requirements):
-    try:
-        # Parse requirements JSON
-        requirements_dict = json.loads(requirements)
-        
-        # Generate the task using the OpenAI API
-        prompt = f"Create a new programming task based on this template: {template}. Requirements: {requirements_dict}"
-        response = client.completions.create(
-            model="text-davinci-003",
-            prompt=prompt,
-            max_tokens=500
-        )
-        return response.choices[0].text.strip()
-    except Exception as e:
-        print(f"Error generating task: {e}")
-        sys.exit(1)
+    client = OpenAI(api_key=key)
+
+    # Parse requirements JSON
+    requirements_dict = json.loads(requirements)
+
+    # Combine template and requirements into a single prompt
+    prompt = f"Create a new programming task based on this template: {template}. Requirements: {requirements_dict}"
+
+    # Call OpenAI API to generate task
+    response = client.completions.create(
+        model="text-davinci-003",
+        prompt=prompt,
+        max_tokens=500
+    )
+
+    task_content = response.choices[0].text.strip()
+
+    # Create a new branch with a unique name
+    branch_name = f"task-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+    create_branch(branch_name)
+    commit_and_push_changes(branch_name, task_content)
 
 def create_branch(branch_name):
     try:
@@ -51,17 +53,12 @@ def commit_and_push_changes(branch_name, task_content):
         sys.exit(1)
 
 if __name__ == "__main__":
-    # Get the template and requirements from the command line arguments
-    try:
-        template = sys.argv[1]
-        requirements = sys.argv[2]
-    except IndexError:
-        print("Error: Missing required command line arguments 'template' and 'requirements'")
+    if len(sys.argv) != 4:
+        print("Error: Missing required command line arguments 'api_key', 'template', and 'requirements'")
         sys.exit(1)
     
-    task_content = generate_task(template, requirements)
-
-    # Create a new branch with a unique name
-    branch_name = f"task-{datetime.now().strftime('%Y%m%d%H%M%S')}"
-    create_branch(branch_name)
-    commit_and_push_changes(branch_name, task_content)
+    api_key = sys.argv[1]
+    template = sys.argv[2]
+    requirements = sys.argv[3]
+    
+    main(api_key, template, requirements)

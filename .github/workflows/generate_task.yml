@@ -34,4 +34,4 @@ jobs:
       env:
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       run: |
-        python scripts/generate_task.py '${{ github.event.inputs.template }}' '${{ github.event.inputs.requirements }}'
+        python scripts/generate_task.py "${{ secrets.OPENAI_API_KEY }}" "${{ github.event.inputs.template }}" "${{ github.event.inputs.requirements }}"
