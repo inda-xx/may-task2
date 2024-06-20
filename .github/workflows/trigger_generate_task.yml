@@ -16,5 +16,7 @@ jobs:
           workflow: generate_task.yml
           token: ${{ secrets.GITHUB_TOKEN }}
           inputs: |
-            template: "Your task template here"
-            requirements: '{"difficulty": "medium", "language": "JavaScript"}'
+            {
+              "template": "Your task template here",
+              "requirements": "{\"difficulty\": \"medium\", \"language\": \"JavaScript\"}"
+            }
