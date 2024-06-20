@@ -7,57 +7,8 @@ on:
         description: 'Task template'
         required: true
         default: |
-          # Programming Task: Modeling Objects in Java
-
-          ## Introduction
-
-          In this task, you will model objects in Java. You will practice creating classes, defining attributes, and implementing methods. This exercise will help you understand the principles of object-oriented programming and how to structure your code effectively.
-
-          ## Learning Objectives
-
-          By the end of this task, you should be able to:
-
-          1. Design and implement classes in Java.
-          2. Define and use attributes (fields) and methods (functions).
-          3. Implement constructors and destructors (if applicable).
-          4. Apply principles of encapsulation, inheritance, and polymorphism.
-          5. Write unit tests to verify the correctness of your code.
-
-          ## Task Requirements
-
-          ### Part 1: Define a Class
-
-          1. Create a class named `Indamon` with the following attributes:
-             - `name` (string): The name of the Indamon.
-             - `hp` (integer): The hit points of the Indamon.
-             - `attack` (integer): The attack value of the Indamon.
-             - `defense` (integer): The defense value of the Indamon.
-             - `fainted` (boolean): A flag indicating if the Indamon has fainted.
-
-          2. Implement a constructor to initialize these attributes.
-
-          ### Part 2: Implement Methods
-
-          1. Add getter and setter methods for each attribute.
-          2. Implement a method `printInfo` to print all the information about the Indamon.
-          3. Implement a method `attack` that takes another `Indamon` object as a parameter and simulates an attack, reducing the opponent's `hp` based on the attacker's `attack` value and the opponent's `defense` value.
-
-          ### Part 3: Unit Testing
-
-          1. Write unit tests to verify the correctness of your class implementation.
-          2. Ensure that all methods are tested, including edge cases (e.g., attacking when `hp` is zero).
-
-          ### Part 4: Documentation
-
-          1. Add comments and docstrings to your code to explain the purpose of each class, method, and attribute.
-          2. Ensure that your code adheres to the style guidelines for Java.
-
-          ## Submission
-
-          1. Submit your code by pushing it to your GitHub repository in the `submissions` folder.
-          2. Ensure that all unit tests pass before submission.
-          3. The grading will be based on the correctness, code style, efficiency, and documentation.
-
+          # Task Template
+          This is a short task template for testing.
       requirements:
         description: 'Requirements for the new task'
         required: true

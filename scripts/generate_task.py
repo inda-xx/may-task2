@@ -9,19 +9,26 @@ def main(key, template, requirements):
     client = OpenAI(api_key=key)
     
     # Parse requirements JSON
-    requirements_dict = json.loads(requirements)
+    try:
+        requirements_dict = json.loads(requirements)
+    except json.JSONDecodeError as e:
+        print(f"Error decoding JSON: {e}")
+        sys.exit(1)
 
     # Combine template and requirements into a single prompt
     prompt = f"Create a new programming task based on this template: {template}. Requirements: {requirements_dict}"
 
     # Call OpenAI API to generate task
-    response = client.completions.create(
-        model="text-davinci-003",
-        prompt=prompt,
-        max_tokens=500
-    )
-
-    task_content = response.choices[0].text.strip()
+    try:
+        response = client.completions.create(
+            model="text-davinci-003",
+            prompt=prompt,
+            max_tokens=500
+        )
+        task_content = response.choices[0].text.strip()
+    except Exception as e:
+        print(f"Error generating task: {e}")
+        sys.exit(1)
 
     # Create a new branch with a unique name
     branch_name = f"task-{datetime.now().strftime('%Y%m%d%H%M%S')}"
