@@ -3,10 +3,14 @@ import sys
 import json
 import subprocess
 from datetime import datetime
-from openai import OpenAI
+import openai
 
-def main(key, template, requirements):
-    client = OpenAI(api_key=key)
+def main(api_key, template, requirements):
+    if not api_key:
+        print("Error: OpenAI API key is missing.")
+        sys.exit(1)
+
+    openai.api_key = api_key
     
     # Parse requirements JSON
     try:
@@ -20,13 +24,13 @@ def main(key, template, requirements):
 
     # Call OpenAI API to generate task
     try:
-        response = client.completions.create(
+        response = openai.Completion.create(
             model="text-davinci-003",
             prompt=prompt,
             max_tokens=500
         )
         task_content = response.choices[0].text.strip()
-    except Exception as e:
+    except openai.error.OpenAIError as e:
         print(f"Error generating task: {e}")
         sys.exit(1)
 
