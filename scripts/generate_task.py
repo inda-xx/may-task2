@@ -31,7 +31,7 @@ def main(api_key, template, requirements):
                 {"role": "user", "content": prompt}
             ]
         )
-        task_content = response.choices[0].message["content"].strip()
+        task_content = response['choices'][0]['message']['content'].strip()
     except Exception as e:
         print(f"Error generating task: {e}")
         sys.exit(1)
