@@ -58,7 +58,6 @@ on:
           2. Ensure that all unit tests pass before submission.
           3. The grading will be based on the correctness, code style, efficiency, and documentation.
 
-
       requirements:
         description: 'Requirements for the new task'
         required: true
@@ -86,4 +85,6 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          python scripts/generate_task.py "${{ secrets.OPENAI_API_KEY }}" "${{ github.event.inputs.template }}" "${{ github.event.inputs.requirements }}"
+          echo "${{ github.event.inputs.template }}" > template.txt
+          echo "${{ github.event.inputs.requirements }}" > requirements.json
+          python scripts/generate_task.py "${{ secrets.OPENAI_API_KEY }}" "$(cat template.txt)" "$(cat requirements.json)"
