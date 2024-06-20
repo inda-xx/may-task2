@@ -4,13 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       template:
-        description: 'Task template file'
+        description: 'Task template'
         required: true
-        default: 'scripts/task_template.txt'
+        default: 'Modeling objects in Java with getters, setters, and constructors.'
       requirements:
         description: 'Requirements for the new task'
         required: true
-        default: '{"difficulty": "medium", "language": "Python", "additional_requirements": ["Include error handling", "Use list comprehensions"]}'
+        default: '{"difficulty": "medium", "language": "Python"}'
 
 jobs:
   generate-task:
