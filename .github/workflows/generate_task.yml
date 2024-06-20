@@ -1,37 +1,38 @@
 name: Generate Task
 
 on:
-  workflow_dispatch:
-    inputs:
-      template:
-        description: 'Task template'
-        required: true
-        default: 'Modeling objects in Java with getters, setters, and constructors.'
-      requirements:
-        description: 'Requirements for the new task'
-        required: true
-        default: '{"difficulty": "medium", "language": "Python"}'
+  issues:
+    types: [opened]
 
 jobs:
-  generate-task:
+  Generate-Task:
     runs-on: ubuntu-latest
+    if: ${{ github.event.issue.title == 'Generate Task' }}
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
-
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.8'
-
-    - name: Install dependencies
+      
+    - name: Install python packages
       run: |
         python -m pip install --upgrade pip
         pip install openai
 
-    - name: Generate and push new task
-      env:
-        OPENAI_API_KEY: ${{ secrets.OPENAI_TOKEN }}
+    - name: Generate task
+      id: generate_task
       run: |
-        python scripts/generate_task.py "${{ secrets.OPENAI_TOKEN }}" "${{ github.event.inputs.template }}" "${{ github.event.inputs.requirements }}"
+        python scripts/generate_task.py ${{ secrets.OPENAI_API_KEY }} "${{ github.event.issue.body }}" '{"difficulty": "medium", "language": "Java"}'
+      
+    - name: Update issue with task
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const fs = require('fs');
+          const taskContent = fs.readFileSync('tasks/new_task.md', 'utf8');
+          github.rest.issues.update({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: taskContent,
+          });

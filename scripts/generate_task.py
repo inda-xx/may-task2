@@ -1,13 +1,12 @@
 import os
 import sys
 import json
-import random
 from openai import OpenAI
 from datetime import datetime
 
-def main(key, template, requirements):
+def main(api_key, template, requirements):
 
-    client = OpenAI(api_key=key)
+    client = OpenAI(api_key=api_key)
 
     # Parse requirements JSON
     requirements_dict = json.loads(requirements)
@@ -24,33 +23,13 @@ def main(key, template, requirements):
 
     task_content = response.choices[0].text.strip()
 
-    # Create a new branch with a unique name
-    branch_name = f"task-{datetime.now().strftime('%Y%m%d%H%M%S')}"
-    create_branch(branch_name)
-    commit_and_push_changes(branch_name, task_content)
-
-def create_branch(branch_name):
-    try:
-        # Create a new git branch
-        subprocess.run(["git", "checkout", "-b", branch_name], check=True)
-        subprocess.run(["git", "push", "origin", branch_name], check=True)
-    except subprocess.CalledProcessError as e:
-        print(f"Error creating branch: {e}")
-        sys.exit(1)
-
-def commit_and_push_changes(branch_name, task_content):
-    try:
-        # Save the generated task to a markdown file and commit the changes
-        os.makedirs("tasks", exist_ok=True)
-        with open("tasks/new_task.md", "w") as file:
-            file.write(task_content)
-
-        subprocess.run(["git", "add", "tasks/new_task.md"], check=True)
-        subprocess.run(["git", "commit", "-m", f"Add new task: {branch_name}"], check=True)
-        subprocess.run(["git", "push", "origin", branch_name], check=True)
-    except subprocess.CalledProcessError as e:
-        print(f"Error committing and pushing changes: {e}")
-        sys.exit(1)
+    # Save the generated task to a markdown file
+    os.makedirs("tasks", exist_ok=True)
+    with open("tasks/new_task.md", "w") as file:
+        file.write(task_content)
+    
+    # Set output variables for the workflow
+    print(f"::set-output name=task_content::{task_content}")
 
 if __name__ == "__main__":
     if len(sys.argv) != 4:
