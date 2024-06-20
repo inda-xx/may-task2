@@ -34,8 +34,8 @@ jobs:
 
       - name: Generate and push new task
         env:
-          OPENAI_API_KEY: ${{ secrets.API_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_TOKEN }}
         run: |
           echo "${{ github.event.inputs.template }}" > template.txt
           echo '${{ github.event.inputs.requirements }}' > requirements.json
-          python scripts/generate_task.py "${{ secrets.API_TOKEN }}" "$(cat template.txt)" "$(cat requirements.json)"
+          python scripts/generate_task.py "${{ secrets.OPENAI_TOKEN }}" "$(cat template.txt)" "$(cat requirements.json)"
