@@ -1,0 +1,25 @@
+# Programming Task Template
+
+## Task Title: {title}
+
+## Description:
+{description}
+
+## Requirements:
+- Difficulty: {difficulty}
+- Language: {language}
+- Additional Requirements:
+  {additional_requirements}
+
+## Instructions:
+1. Write a function called `{function_name}` that takes the following parameters:
+   {parameters}
+2. Your function should return {return_value}.
+
+## Example:
+```{language}
+# Example Input
+input_data = {example_input}
+
+# Example Output
+output_data = {example_output}

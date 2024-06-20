@@ -1,3 +1,4 @@
+
 from openai import OpenAI
 import subprocess
 import os
@@ -11,8 +12,12 @@ client = OpenAI(
 
 def generate_task(template, requirements):
     try:
+        # Read the template
+        with open(template, 'r') as file:
+            task_template = file.read()
+
         # Generate the task using the OpenAI API
-        prompt = f"Create a new programming task based on this template: {template}. Requirements: {requirements}"
+        prompt = f"Generate a programming task based on the following template:\n{task_template}\nRequirements: {requirements}"
         response = client.completions.create(
             model="text-davinci-003",
             prompt=prompt,
