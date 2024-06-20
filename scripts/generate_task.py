@@ -11,16 +11,14 @@ client = OpenAI(
 
 def generate_task(template, requirements):
     try:
-        # Generate the task using the new OpenAI API
+        # Generate the task using the OpenAI API
         prompt = f"Create a new programming task based on this template: {template}. Requirements: {requirements}"
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": prompt}
-            ]
+        response = client.completions.create(
+            model="text-davinci-003",
+            prompt=prompt,
+            max_tokens=500
         )
-        return response.choices[0].message.content.strip()
+        return response.choices[0].text.strip()
     except Exception as e:
         print(f"Error generating task: {e}")
         sys.exit(1)

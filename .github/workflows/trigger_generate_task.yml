@@ -1,0 +1,20 @@
+name: Trigger Generate Task
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Generate Task Workflow
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: generate_task.yml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          inputs: |
+            template: "Your task template here"
+            requirements: '{"difficulty": "medium", "language": "JavaScript"}'
