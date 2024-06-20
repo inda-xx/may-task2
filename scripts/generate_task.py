@@ -24,13 +24,15 @@ def main(api_key, template, requirements):
 
     # Call OpenAI API to generate task
     try:
-        response = openai.Completion.create(
-            model="text-davinci-003",
-            prompt=prompt,
-            max_tokens=500
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": prompt}
+            ]
         )
-        task_content = response.choices[0].text.strip()
-    except openai.error.OpenAIError as e:
+        task_content = response.choices[0].message["content"].strip()
+    except openai.OpenAIError as e:
         print(f"Error generating task: {e}")
         sys.exit(1)
 
