@@ -14,6 +14,9 @@ on:
         required: true
         default: '{"difficulty": "medium", "language": "Java"}'
 
+permissions:
+  contents: write  # Grant write permission for the GITHUB_TOKEN
+
 jobs:
   generate-task:
     runs-on: ubuntu-latest
@@ -35,7 +38,7 @@ jobs:
       - name: Generate and push new task
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_TOKEN }}
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}  # Use PAT instead of GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "${{ github.event.inputs.template }}" > template.txt
           echo '${{ github.event.inputs.requirements }}' > requirements.json
