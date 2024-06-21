@@ -12,7 +12,7 @@ def main(api_key, template, requirements):
 
     client = OpenAI(api_key=api_key)
     
-    # Parse requirements JSON
+    # Parse requirements
     try:
         requirements_dict = json.loads(requirements)
     except json.JSONDecodeError as e:
@@ -22,7 +22,6 @@ def main(api_key, template, requirements):
     # Combine template and requirements into a single prompt
     prompt = f"Create a new programming task based on this template: {template}. Requirements: {requirements_dict}"
 
-    # Call OpenAI API to generate task
     try:
         response = client.chat.completions.create(
             model="gpt-4",
@@ -36,7 +35,7 @@ def main(api_key, template, requirements):
         print(f"Error generating task: {e}")
         sys.exit(1)
 
-    # Create a new branch with a unique name
+    # Create a new branch 
     branch_name = f"task-{datetime.now().strftime('%Y%m%d%H%M%S')}"
     create_branch(branch_name)
     commit_and_push_changes(branch_name, task_content)
@@ -61,7 +60,7 @@ def commit_and_push_changes(branch_name, task_content):
         subprocess.run(["git", "config", "--global", "user.email", "actions@github.com"], check=True)
         subprocess.run(["git", "config", "--global", "user.name", "github-actions"], check=True)
         
-        # Save the generated task to a markdown file and commit the changes
+        # Save the generated task to a markdown file and commit changes
         os.makedirs("tasks", exist_ok=True)
         task_file_path = os.path.join("tasks", "new_task.md")
         with open(task_file_path, "w") as file:
