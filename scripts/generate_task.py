@@ -12,7 +12,7 @@ def main(api_key, template, requirements):
 
     client = OpenAI(api_key=api_key)
     
-    # Parse requirements
+    # Parse requirements 
     try:
         requirements_dict = json.loads(requirements)
     except json.JSONDecodeError as e:
@@ -20,7 +20,10 @@ def main(api_key, template, requirements):
         sys.exit(1)
 
     # Combine template and requirements into a single prompt
-    prompt = f"Create a new programming task based on this template: {template}. Requirements: {requirements_dict}"
+    prompt = (f"Create a new programming task based on this template: {template}. "
+              f"Requirements: {requirements_dict}. "
+              "Also, provide a set of tests for the task and a suggested solution.")
+
 
     try:
         response = client.chat.completions.create(
@@ -35,10 +38,21 @@ def main(api_key, template, requirements):
         print(f"Error generating task: {e}")
         sys.exit(1)
 
+    # Extract task, tests, and solution from response 
+    task, tests, solution = extract_task_tests_solution(task_content)
+
     # Create a new branch 
-    branch_name = f"task-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+    branch_name = f"task-{datetime.now().strftime('%Y%m%d%H%M')}"
     create_branch(branch_name)
-    commit_and_push_changes(branch_name, task_content)
+    commit_and_push_changes(branch_name, task, tests, solution)
+
+def extract_task_tests_solution(content):
+    # Extract the different parts from the content (simple heuristic)
+    parts = content.split("\n\n")
+    task = parts[0]
+    tests = parts[1]
+    solution = parts[2]
+    return task, tests, solution
 
 def create_branch(branch_name):
     try:
@@ -54,20 +68,29 @@ def create_branch(branch_name):
         print(f"Error creating branch: {e}")
         sys.exit(1)
 
-def commit_and_push_changes(branch_name, task_content):
+def commit_and_push_changes(branch_name, task_content, tests_content, solution_content):
     try:
         # Configure git
         subprocess.run(["git", "config", "--global", "user.email", "actions@github.com"], check=True)
         subprocess.run(["git", "config", "--global", "user.name", "github-actions"], check=True)
         
-        # Save the generated task to a markdown file and commit changes
+        # Save the generated task to a markdown file and commit the changes
         os.makedirs("tasks", exist_ok=True)
+        os.makedirs(".hidden_tasks", exist_ok=True)
+
         task_file_path = os.path.join("tasks", "new_task.md")
+        tests_file_path = os.path.join(".hidden_tasks", "new_task_tests.md")
+        solution_file_path = os.path.join(".hidden_tasks", "new_task_solution.md")
+
         with open(task_file_path, "w") as file:
             file.write(task_content)
+        with open(tests_file_path, "w") as file:
+            file.write(tests_content)
+        with open(solution_file_path, "w") as file:
+            file.write(solution_content)
 
-        subprocess.run(["git", "add", task_file_path], check=True)
-        subprocess.run(["git", "commit", "-m", f"Add new task: {branch_name}"], check=True)
+        subprocess.run(["git", "add", task_file_path, tests_file_path, solution_file_path], check=True)
+        subprocess.run(["git", "commit", "-m", f"Add new task and hidden files: {branch_name}"], check=True)
         # Use the GITHUB_TOKEN for authentication
         subprocess.run(
             ["git", "push", "origin", branch_name],
