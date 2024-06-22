@@ -12,7 +12,7 @@ def main(api_key, template, requirements):
 
     client = OpenAI(api_key=api_key)
     
-    # Parse requirements 
+    # Parse requirements JSON
     try:
         requirements_dict = json.loads(requirements)
     except json.JSONDecodeError as e:
@@ -22,9 +22,13 @@ def main(api_key, template, requirements):
     # Combine template and requirements into a single prompt
     prompt = (f"Create a new programming task based on this template: {template}. "
               f"Requirements: {requirements_dict}. "
-              "Also, provide a set of tests for the task and a suggested solution.")
+              "Also, provide a set of tests for the task and a suggested solution. "
+              "Format the response as follows:\n\n"
+              "### Task\n<task_description>\n\n"
+              "### Tests\n<test_cases>\n\n"
+              "### Solution\n<solution_code>")
 
-
+    # Call OpenAI API to generate task, tests, and solution
     try:
         response = client.chat.completions.create(
             model="gpt-4",
@@ -33,25 +37,33 @@ def main(api_key, template, requirements):
                 {"role": "user", "content": prompt}
             ]
         )
-        task_content = response.choices[0].message.content.strip()
+        response_content = response.choices[0].message.content.strip()
     except Exception as e:
         print(f"Error generating task: {e}")
         sys.exit(1)
 
-    # Extract task, tests, and solution from response 
-    task, tests, solution = extract_task_tests_solution(task_content)
+    # Extract task, tests, and solution from the response
+    task, tests, solution = extract_task_tests_solution(response_content)
 
-    # Create a new branch 
-    branch_name = f"task-{datetime.now().strftime('%Y%m%d%H%M')}"
+    # Create a new branch with a unique name
+    branch_name = f"task-{datetime.now().strftime('%Y%m%d%H%M%S')}"
     create_branch(branch_name)
     commit_and_push_changes(branch_name, task, tests, solution)
 
 def extract_task_tests_solution(content):
-    # Extract the different parts from the content (simple heuristic)
-    parts = content.split("\n\n")
-    task = parts[0]
-    tests = parts[1]
-    solution = parts[2]
+    # Split the content based on predefined markers
+    task_marker = "### Task"
+    tests_marker = "### Tests"
+    solution_marker = "### Solution"
+
+    task_start = content.find(task_marker)
+    tests_start = content.find(tests_marker)
+    solution_start = content.find(solution_marker)
+
+    task = content[task_start + len(task_marker):tests_start].strip()
+    tests = content[tests_start + len(tests_marker):solution_start].strip()
+    solution = content[solution_start + len(solution_marker):].strip()
+
     return task, tests, solution
 
 def create_branch(branch_name):
@@ -104,13 +116,12 @@ def commit_and_push_changes(branch_name, task_content, tests_content, solution_c
         print(f"An unexpected error occurred: {e}")
         sys.exit(1)
 
-if __name__ == "__main__":
-    if len(sys.argv) != 4:
-        print("Error: Missing required command line arguments 'api_key', 'template', and 'requirements'")
-        sys.exit(1)
-    
-    api_key = sys.argv[1]
-    template = sys.argv[2]
-    requirements = sys.argv[3]
-    
-    main(api_key, template, requirements)
+if len(sys.argv) != 4:
+    print("Error: Missing required command line arguments 'api_key', 'template', and 'requirements'")
+    sys.exit(1)
+
+api_key = sys.argv[1]
+template = sys.argv[2]
+requirements = sys.argv[3]
+
+main(api_key, template, requirements)
