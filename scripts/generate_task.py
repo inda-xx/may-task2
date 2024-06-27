@@ -40,10 +40,11 @@ def main(api_key):
               "Also, provide a set of tests for the task and a suggested solution. "
               "Format the response as follows:\n\n"
               "### Task\n<task_description>\n\n"
+              "### Template\n<template_code>\n\n"
               "### Tests\n<test_cases>\n\n"
               "### Solution\n<solution_code>")
 
-    # Call OpenAI API to generate task, tests, and solution
+    # Call OpenAI API to generate task, template, tests, and solution
     try:
         response = client.chat.completions.create(
             model="gpt-4",
@@ -57,30 +58,33 @@ def main(api_key):
         print(f"Error generating task: {e}")
         sys.exit(1)
 
-    # Extract task, tests, and solution from the response
-    task, tests, solution = extract_task_tests_solution(response_content)
+    # Extract task, template, tests, and solution from the response
+    task, template, tests, solution = extract_task_template_tests_solution(response_content)
 
     # Create a new branch with a unique name
     stockholm_tz = timezone('Europe/Stockholm')
     branch_name = f"task-{datetime.now(stockholm_tz).strftime('%Y%m%d%H%M%S')}"
     create_branch(branch_name)
-    commit_and_push_changes(branch_name, task, tests, solution)
+    commit_and_push_changes(branch_name, task, template, tests, solution)
 
-def extract_task_tests_solution(content):
+def extract_task_template_tests_solution(content):
     # Split the content based on predefined markers
     task_marker = "### Task"
+    template_marker = "### Template"
     tests_marker = "### Tests"
     solution_marker = "### Solution"
 
     task_start = content.find(task_marker)
+    template_start = content.find(template_marker)
     tests_start = content.find(tests_marker)
     solution_start = content.find(solution_marker)
 
-    task = content[task_start + len(task_marker):tests_start].strip()
+    task = content[task_start + len(task_marker):template_start].strip()
+    template = content[template_start + len(template_marker):tests_start].strip()
     tests = content[tests_start + len(tests_marker):solution_start].strip()
     solution = content[solution_start + len(solution_marker):].strip()
 
-    return task, tests, solution
+    return task, template, tests, solution
 
 def create_branch(branch_name):
     try:
@@ -96,7 +100,7 @@ def create_branch(branch_name):
         print(f"Error creating branch: {e}")
         sys.exit(1)
 
-def commit_and_push_changes(branch_name, task_content, tests_content, solution_content):
+def commit_and_push_changes(branch_name, task_content, template_content, tests_content, solution_content):
     try:
         # Configure git
         subprocess.run(["git", "config", "--global", "user.email", "actions@github.com"], check=True)
@@ -104,20 +108,24 @@ def commit_and_push_changes(branch_name, task_content, tests_content, solution_c
         
         # Save the generated task to a markdown file and commit the changes
         os.makedirs("tasks", exist_ok=True)
+        os.makedirs("src", exist_ok=True)
         os.makedirs(".hidden_tasks", exist_ok=True)
 
         task_file_path = os.path.join("tasks", "new_task.md")
-        tests_file_path = os.path.join(".hidden_tasks", "new_task_tests.md")
-        solution_file_path = os.path.join(".hidden_tasks", "new_task_solution.md")
+        template_file_path = os.path.join("src", "template_code.java")  # Adjust extension based on language
+        tests_file_path = os.path.join(".hidden_tasks", "new_task_tests.java")  # Adjust extension based on language
+        solution_file_path = os.path.join(".hidden_tasks", "new_task_solution.java")  # Adjust extension based on language
 
         with open(task_file_path, "w") as file:
             file.write(task_content)
+        with open(template_file_path, "w") as file:
+            file.write(template_content)
         with open(tests_file_path, "w") as file:
             file.write(tests_content)
         with open(solution_file_path, "w") as file:
             file.write(solution_content)
 
-        subprocess.run(["git", "add", task_file_path, tests_file_path, solution_file_path], check=True)
+        subprocess.run(["git", "add", task_file_path, template_file_path, tests_file_path, solution_file_path], check=True)
         subprocess.run(["git", "commit", "-m", f"Add new task and hidden files: {branch_name}"], check=True)
         # Use the GITHUB_TOKEN for authentication
         subprocess.run(
