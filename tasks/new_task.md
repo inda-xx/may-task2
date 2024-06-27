@@ -1,0 +1,1 @@
+You've been commissioned to create a simple game application where a player can interact, move, and score against enemies. This will involve several fundamental steps such as working with classes, creating methods, and handling inputs.
