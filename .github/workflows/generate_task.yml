@@ -3,12 +3,10 @@ name: Generate Task
 on:
   workflow_dispatch:
     inputs:
-      template:
-        description: 'Task template'
+      theme:
+        description: 'Theme for the new task'
         required: true
-        default: |
-          # Task Template
-          This is a short task template for testing.
+        default: 'Create a simple game application that includes the following functionalities: player movement, scoring system, and enemy interactions.'
       requirements:
         description: 'Requirements for the new task'
         required: true
@@ -33,13 +31,13 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install openai
+          pip install openai pytz
 
       - name: Generate and push new task
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REQUIREMENTS_JSON: ${{ github.event.inputs.requirements }}
+          TASK_THEME: ${{ github.event.inputs.theme }}
         run: |
-          echo "${{ github.event.inputs.template }}" > template.txt
-          echo '${{ github.event.inputs.requirements }}' > requirements.json
-          python scripts/generate_task.py "${{ secrets.OPENAI_TOKEN }}" "$(cat template.txt)" "$(cat requirements.json)"
+          python scripts/generate_task.py "${{ secrets.OPENAI_TOKEN }}"

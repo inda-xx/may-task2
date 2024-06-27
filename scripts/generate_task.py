@@ -4,24 +4,39 @@ import json
 import subprocess
 from datetime import datetime
 from openai import OpenAI
+import pytz
+from pytz import timezone
 
-def main(api_key, template, requirements):
+def main(api_key):
     if not api_key:
         print("Error: OpenAI API key is missing.")
         sys.exit(1)
 
     client = OpenAI(api_key=api_key)
-    
-    # Parse requirements JSON
+
+    # Read the template file
     try:
-        requirements_dict = json.loads(requirements)
+        with open("task_template.md", "r") as file:
+            template = file.read()
+    except FileNotFoundError:
+        print("Error: task_template.md file not found.")
+        sys.exit(1)
+
+    # Extract requirements JSON and theme from environment variables
+    requirements_str = os.getenv("REQUIREMENTS_JSON", '{"difficulty": "medium", "language": "Java"}')
+    theme = os.getenv("TASK_THEME", "Create a basic Java application with the following requirements.")
+
+    try:
+        requirements_dict = json.loads(requirements_str)
     except json.JSONDecodeError as e:
         print(f"Error decoding JSON: {e}")
         sys.exit(1)
 
-    # Combine template and requirements into a single prompt
+    # Combine template, theme, and requirements into a single prompt
     prompt = (f"Create a new programming task based on this template: {template}. "
+              f"Theme: {theme}. "
               f"Requirements: {requirements_dict}. "
+              "The task should include specific function names where necessary. "
               "Also, provide a set of tests for the task and a suggested solution. "
               "Format the response as follows:\n\n"
               "### Task\n<task_description>\n\n"
@@ -46,7 +61,8 @@ def main(api_key, template, requirements):
     task, tests, solution = extract_task_tests_solution(response_content)
 
     # Create a new branch with a unique name
-    branch_name = f"task-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+    stockholm_tz = timezone('Europe/Stockholm')
+    branch_name = f"task-{datetime.now(stockholm_tz).strftime('%Y%m%d%H%M%S')}"
     create_branch(branch_name)
     commit_and_push_changes(branch_name, task, tests, solution)
 
@@ -116,12 +132,10 @@ def commit_and_push_changes(branch_name, task_content, tests_content, solution_c
         print(f"An unexpected error occurred: {e}")
         sys.exit(1)
 
-if len(sys.argv) != 4:
-    print("Error: Missing required command line arguments 'api_key', 'template', and 'requirements'")
+if len(sys.argv) != 2:
+    print("Error: Missing required command line argument 'api_key'")
     sys.exit(1)
 
 api_key = sys.argv[1]
-template = sys.argv[2]
-requirements = sys.argv[3]
 
-main(api_key, template, requirements)
+main(api_key)
