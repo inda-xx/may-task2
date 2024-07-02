@@ -1,0 +1,1 @@
+The code for the solution will consist of the implementation of the `Player` class, `Enemy` class, and the `Score` class. Remember that the ‘Player’ object should contain a `Score` object. When implementing the `collision` method, make use of the `addPoints` method in `Score`, and the `isAlive` method.
