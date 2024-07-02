@@ -22,6 +22,16 @@ def main(api_key):
         print("Error: task_template.md file not found.")
         sys.exit(1)
 
+    # Read the existing code and tests
+    try:
+        with open("src/Indamon.java", "r") as file:
+            existing_code = file.read()
+        with open("src/IndamonTest.java", "r") as file:
+            existing_tests = file.read()
+    except FileNotFoundError:
+        print("Error: Indamon.java or IndamonTest.java file not found.")
+        sys.exit(1)
+
     # Extract requirements JSON and theme from environment variables
     requirements_str = os.getenv("REQUIREMENTS_JSON", '{"difficulty": "medium", "language": "Java"}')
     theme = os.getenv("TASK_THEME", "Create a basic Java application with the following requirements.")
@@ -32,17 +42,19 @@ def main(api_key):
         print(f"Error decoding JSON: {e}")
         sys.exit(1)
 
-    # Combine template, theme, and requirements into a single prompt
+    # Combine template, theme, requirements, existing code, and existing tests into a single prompt
     prompt = (f"Create a new programming task based on this template: {template}. "
               f"Theme: {theme}. "
               f"Requirements: {requirements_dict}. "
-              "The task should include specific function names where necessary. "
+              "Use the following existing code and tests as inspiration. Ensure the new task includes specific function names where necessary. "
               "Also, provide a set of tests for the task and a suggested solution. "
               "Format the response as follows:\n\n"
               "### Task\n<task_description>\n\n"
               "### Template\n<template_code>\n\n"
               "### Tests\n<test_cases>\n\n"
-              "### Solution\n<solution_code>")
+              "### Solution\n<solution_code>\n\n"
+              f"### Existing Code\n{existing_code}\n\n"
+              f"### Existing Tests\n{existing_tests}")
 
     # Call OpenAI API to generate task, template, tests, and solution
     try:
