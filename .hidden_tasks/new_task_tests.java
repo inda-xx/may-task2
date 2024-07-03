@@ -1,0 +1,1 @@
+Create a test suite `GameTest` that includes robust, detailed, edge cases and performance considerations for testing all implemented methods in `Player`, `Coin`, and `Enemy`.
