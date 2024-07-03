@@ -1,0 +1,1 @@
+The set of tests must verify the correctness of all aspects as described above. The tests should thoroughly test all edge cases, including invalid inputs, interaction between player and items, interaction between player and enemies and game field boundary conditions.
