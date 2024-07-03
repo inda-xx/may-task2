@@ -1,0 +1,4 @@
+- `testPlayRoundPlayer1Wins()`: Test the situation where Player 1 wins the round.
+- `testPlayRoundPlayer2Wins()`: Test the situation where Player 2 wins the round.
+- `testPlayRoundTie()`: Test the situation where there's no winner in the round.
+- `testGetPlayerScore()`: Test the getters `getPlayer1Score` and `getPlayer2Score`.
