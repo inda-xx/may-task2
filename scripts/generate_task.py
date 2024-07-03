@@ -46,9 +46,9 @@ def main(api_key):
     prompt = (f"Create a new programming task based on this template: {template}. "
               f"Theme: {theme}. "
               f"Requirements: {requirements_dict}. "
-              "Use the following existing code and unittests as inspiration. Ensure that the new generated tasks are detailed, aesthetically pleasing, and provide thorough instructions for the students. "
+              "Use the following existing code and tests as inspiration. Ensure that the new generated tasks are detailed, aesthetically pleasing, and provide thorough instructions for the students. "
               "The new task must include specific function names where necessary and be compatible with the provided tests. "
-              "Provide a set of unittests for the task and a suggested solution. The tests must be extremely thorough, robust, and detailed, covering all edge cases, including invalid inputs, boundary conditions, and performance considerations. The unittests should be similar to the provided tests and must be of high quality as they will be used for student assessment and grading. "
+              "Provide a set of tests for the task and a suggested solution. The tests must be extremely thorough, robust, and detailed, covering all edge cases, including invalid inputs, boundary conditions, and performance considerations. The tests should be similar to the provided tests and must be of high quality as they will be used for student assessment and grading. "
               "The task description must include the name of the test class and the test methods for the functions in the task. "
               "The code template must be very detailed and coordinated with the task description and tests, ensuring the correct function names and return types are used so that the tests pass. "
               "Format the response as follows:\n\n"
@@ -60,17 +60,9 @@ def main(api_key):
               f"### Existing Tests\n{existing_tests}")
 
     # Call OpenAI API to generate task, template, tests, and solution
-    try:
-        response = client.chat.completions.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": prompt}
-            ]
-        )
-        response_content = response.choices[0].message.content.strip()
-    except Exception as e:
-        print(f"Error generating task: {e}")
+    response_content = generate_with_retries(client, prompt, max_retries=3)
+    if response_content is None:
+        print("Error: Failed to generate task after multiple retries.")
         sys.exit(1)
 
     # Extract task, template, tests, and solution from the response
@@ -81,6 +73,23 @@ def main(api_key):
     branch_name = f"task-{datetime.now(stockholm_tz).strftime('%Y%m%d%H%M%S')}"
     create_branch(branch_name)
     commit_and_push_changes(branch_name, task, template, tests, solution)
+
+def generate_with_retries(client, prompt, max_retries=3):
+    for attempt in range(max_retries):
+        try:
+            response = client.chat.completions.create(
+                model="gpt-4",
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant."},
+                    {"role": "user", "content": prompt}
+                ]
+            )
+            return response.choices[0].message.content.strip()
+        except Exception as e:
+            print(f"Error generating task: {e}")
+            if attempt < max_retries - 1:
+                print("Retrying...")
+    return None
 
 def extract_task_template_tests_solution(content):
     # Split the content based on predefined markers
